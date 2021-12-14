@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Where is Waldo</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <header>
+      <div class="titles">
+        <h1>where is waldo?</h1>
+        <div class="scoreInfo">
+          <h3 class="currentLevel"></h3>
+          <h3 class="completed"></h3>
+        </div>
+      </div>
+
+      <div class="hiddenCharacters"></div>
+    </header>
+    <main>
+      <div class="container">
+        <div id="gameboard" class="gameboard"></div>
+        <div class="btn-group">
+          <button type="button">Lvl 1</button>
+          <button type="button">Lvl 2</button>
+          <button type="button">Lvl 3</button>
+          <button type="button">Lvl 4</button>
+          <button type="button">Lvl 5</button>
+          <button type="button">Lvl 6</button>
+        </div>
+      </div>
+      <!-- small model -->
+      <div class="smallModel"></div>
+      <!-- MODEL -->
+      <div class="modelContainer">
+        <div class="model"></div>
+      </div>
+    </main>
+    <footer>
+      <p>&COPY; 2021</p>
+    </footer>
+    <script src="./bundle.js"></script>
+  </body>
+</html>
