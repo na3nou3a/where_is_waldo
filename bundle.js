@@ -1,0 +1,96 @@
+/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _utils_gameInfo_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/gameInfo.js */ \"./src/utils/gameInfo.js\");\nfunction _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== \"undefined\" && o[Symbol.iterator] || o[\"@@iterator\"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === \"number\") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError(\"Invalid attempt to iterate non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\"); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it[\"return\"] != null) it[\"return\"](); } finally { if (didErr) throw err; } } }; }\n\nfunction _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === \"string\") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === \"Object\" && o.constructor) n = o.constructor.name; if (n === \"Map\" || n === \"Set\") return Array.from(o); if (n === \"Arguments\" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }\n\nfunction _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }\n\n\n/*=============== SELECT HTML ===============*/\n\nvar gameBoard = document.querySelector('.gameboard');\nvar charactersContainer = document.querySelector('.hiddenCharacters');\nvar smModel = document.querySelector('.smallModel');\nvar heading1 = document.querySelector('.currentLevel');\nvar heading2 = document.querySelector('.completed');\nvar btns = document.querySelectorAll('.btn-group button');\n/*=============== GAME LOGIC ===============*/\n\nvar currentLevel = {\n  wichLevel: 'level1',\n  levelImg: '',\n  hiddenC: {}\n};\nvar completedLevels = [];\nvar gameCoords;\n/*=============== DATABASE ===============*/\n\nfirebase.initializeApp({\n  apiKey: 'AIzaSyCzAMh0oEmf7-5w9dJMqKbBfu04D3DpsTU',\n  authDomain: 'where-is-waldo-11032.firebaseapp.com',\n  projectId: 'where-is-waldo-11032'\n});\nvar db = firebase.firestore();\n/*=============== START PLAYING ===============*/\n\nvar data = db.collection('gameCoords').doc('SiPAB585BQxK4VKUdiOH').get().then(function (snap) {\n  gameCoords = snap.data();\n  prepareGameBoard();\n  play(currentLevel.wichLevel);\n});\n/*=============== FUNCTIONS ===============*/\n// devide gameboard into parts\n\nfunction prepareGameBoard() {\n  gameBoard.innerHTML = '';\n  var count = 1;\n\n  for (var i = 0; i < 50; i++) {\n    var div = document.createElement('div');\n    div.classList.add('bg-square', 'sq');\n    div.id = 'bg' + count;\n    count++;\n    gameBoard.append(div);\n  }\n} // devide squares into small ones\n\n\nfunction devide(divToDevide, name) {\n  var count = 1;\n\n  for (var i = 0; i < 50; i++) {\n    var div = document.createElement('div');\n    div.classList.add('sm-square', 'sq');\n    div.id = name + count;\n    count++;\n    divToDevide.append(div);\n  }\n} // update level info\n\n\nfunction updateCurrentLevelInfo(level) {\n  var hiddenCharacters = _utils_gameInfo_js__WEBPACK_IMPORTED_MODULE_0__.gameInfo[level].characters;\n  var levelImg = _utils_gameInfo_js__WEBPACK_IMPORTED_MODULE_0__.gameInfo[level].img;\n  currentLevel.wichLevel = level;\n  currentLevel.levelImg = levelImg;\n  currentLevel.hiddenC = {};\n\n  for (var i = 0; i < hiddenCharacters.length; i++) {\n    var _hiddenCharacters$i = hiddenCharacters[i],\n        name = _hiddenCharacters$i.name,\n        image = _hiddenCharacters$i.image,\n        found = _hiddenCharacters$i.found;\n    var _gameCoords$level$nam = gameCoords[level][name],\n        bgSquaresId = _gameCoords$level$nam.bgSquaresId,\n        smallSquaresId = _gameCoords$level$nam.smallSquaresId;\n    currentLevel.hiddenC[name] = {};\n    currentLevel.hiddenC[name].img = image;\n    currentLevel.hiddenC[name].bgSquares = bgSquaresId;\n    currentLevel.hiddenC[name].winIds = smallSquaresId;\n    currentLevel.hiddenC[name].found = found;\n  }\n} // play\n\n\nfunction play(level) {\n  updateCurrentLevelInfo(level);\n  updateHeaderIcons();\n  updateGameBoardImg();\n  updateHtmlTitle1();\n  updateHtmlTitle2();\n  prepareGameBoard();\n  btns.forEach(function (btn) {\n    btn.addEventListener('click', startPlaying);\n  });\n  var characters = currentLevel.hiddenC;\n\n  for (var name in characters) {\n    var array = characters[name].bgSquares;\n\n    var _iterator = _createForOfIteratorHelper(array),\n        _step;\n\n    try {\n      for (_iterator.s(); !(_step = _iterator.n()).done;) {\n        var id = _step.value;\n        var div = document.getElementById(id);\n        devide(div, name);\n      }\n    } catch (err) {\n      _iterator.e(err);\n    } finally {\n      _iterator.f();\n    }\n  }\n\n  var squares = gameBoard.querySelectorAll('.sq');\n  squares.forEach(function (sq) {\n    sq.addEventListener('click', handleClick);\n  });\n} // update header icons\n\n\nfunction updateHeaderIcons() {\n  charactersContainer.innerHTML = '';\n  var characters = currentLevel.hiddenC;\n\n  for (var prop in characters) {\n    var imgUrl = characters[prop].img;\n    var img = document.createElement('img');\n    img.src = imgUrl;\n    img.alt = prop;\n    img.title = prop;\n    img.classList.add('character-img', prop);\n    charactersContainer.append(img);\n  }\n} // update gameboard level img\n\n\nfunction updateGameBoardImg() {\n  var levelImg = currentLevel.levelImg;\n  gameBoard.style.backgroundImage = \"url(\".concat(levelImg, \")\");\n} // update html titles\n\n\nfunction updateHtmlTitle1() {\n  var level = currentLevel.wichLevel;\n  var levelNum = level.slice(5);\n  heading1.innerHTML = \"level: \".concat(levelNum);\n}\n\nfunction updateHtmlTitle2() {\n  heading2.innerHTML = \"completed levels: \".concat(completedLevels.length, \"/6\");\n} // add events to btns\n\n\nfunction startPlaying(e) {\n  var num = e.target.textContent.slice(4);\n  var txt = 'level';\n  play(\"\".concat(txt).concat(num));\n} // handle square click\n\n\nfunction handleClick(e) {\n  e.stopPropagation();\n  var div = e.target;\n\n  var _getDivCoords = getDivCoords(div),\n      x = _getDivCoords.x,\n      y = _getDivCoords.y; // how much hidden characters in level\n\n\n  var numOfChoices = getNumOfChoices(); // 1 choice\n\n  if (numOfChoices === 1) {\n    var txt;\n\n    for (var prop in currentLevel.hiddenC) {\n      txt = prop;\n    }\n\n    var isWaldo = checkIfIsWaldo(txt, div.id);\n\n    if (!isWaldo) {\n      handleFalseResponse(x, y);\n    } else {\n      handleTrueResponse(txt, x, y);\n    }\n\n    return;\n  } // multiple choices\n\n\n  var choices = showSelectModel(x, y);\n\n  var _iterator2 = _createForOfIteratorHelper(choices),\n      _step2;\n\n  try {\n    var _loop = function _loop() {\n      var ch = _step2.value;\n      ch.addEventListener('click', function () {\n        var txt = ch.textContent;\n        var isWaldo = checkIfIsWaldo(txt, div.id);\n\n        if (!isWaldo) {\n          handleFalseResponse(x, y);\n        } else {\n          handleTrueResponse(txt, x, y);\n        }\n      });\n    };\n\n    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {\n      _loop();\n    }\n  } catch (err) {\n    _iterator2.e(err);\n  } finally {\n    _iterator2.f();\n  }\n} // get div x y coords\n\n\nfunction getDivCoords(div) {\n  var coords = div.getBoundingClientRect();\n  var width;\n  var height;\n\n  if (coords.width > 10) {\n    width = coords.width / 10;\n    height = coords.height / 20;\n  } else {\n    width = coords.width / 2;\n    height = coords.height / 4;\n  }\n\n  var x = coords.left + width;\n  var y = coords.top + height;\n  return {\n    x: x,\n    y: y\n  };\n} // false response\n\n\nfunction handleFalseResponse(x, y) {\n  showTrueFalseModel(false, x, y);\n  setTimeout(function () {\n    hide(smModel);\n  }, 700);\n} // true response\n\n\nfunction handleTrueResponse(txt, x, y) {\n  var level = currentLevel.wichLevel;\n  var img = document.querySelector(\".\".concat(txt));\n  showTrueFalseModel(true, x, y);\n  img.classList.add('offset');\n  currentLevel.hiddenC[txt].found = true;\n  var isLevelCompleted = checkIfLevelCompleted();\n\n  if (isLevelCompleted) {\n    // remove events\n    var squares = gameBoard.querySelectorAll('.sq');\n    squares.forEach(function (sq) {\n      sq.removeEventListener('click', handleClick);\n    });\n    btns.forEach(function (btn) {\n      btn.removeEventListener('click', startPlaying);\n    });\n    completedLevels.push(level); // check if game over\n\n    var isGameOver = checkIfGameOver();\n\n    if (isGameOver) {\n      hide(smModel);\n      setTimeout(function () {\n        showGameOverModel();\n      }, 700);\n      return;\n    }\n\n    updateHtmlTitle2();\n    hide(smModel);\n    setTimeout(function () {\n      showLevelCompletedModel(level);\n    }, 700);\n  } else {\n    setTimeout(function () {\n      hide(smModel);\n    }, 700);\n  }\n} // get num of choices\n\n\nfunction getNumOfChoices() {\n  var count = 0;\n\n  for (var prop in currentLevel.hiddenC) {\n    count++;\n  }\n\n  return count;\n} // show model of completed level\n\n\nfunction showLevelCompletedModel(level) {\n  var num = level.slice(5);\n  var modelContainer = document.querySelector('.modelContainer');\n  var model = document.querySelector('.model');\n  var para = document.createElement('p');\n  para.innerHTML = \"congrats you completed level \".concat(num, \"!\");\n  var btn = document.createElement('button');\n  btn.textContent = 'next';\n  model.append(para, btn);\n  modelContainer.classList.add('show');\n  btn.addEventListener('click', function () {\n    model.innerHTML = '';\n    modelContainer.classList.remove('show');\n    var nonCompletedLevels = getNCLevels();\n    var nextLevel = nonCompletedLevels[0];\n    play(nextLevel);\n  });\n} // get non completed levels\n\n\nfunction getNCLevels() {\n  var nCompleted = [];\n  var allLevels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6'];\n\n  for (var _i = 0, _allLevels = allLevels; _i < _allLevels.length; _i++) {\n    var level = _allLevels[_i];\n\n    if (completedLevels.indexOf(level) < 0) {\n      nCompleted.push(level);\n    }\n  }\n\n  return nCompleted;\n} // check if game over\n\n\nfunction checkIfGameOver() {\n  if (completedLevels.length === 6) {\n    return true;\n  }\n\n  return false;\n} // check if level completed\n\n\nfunction checkIfLevelCompleted() {\n  for (var character in currentLevel.hiddenC) {\n    if (currentLevel.hiddenC[character].found === false) {\n      return false;\n    }\n  }\n\n  return true;\n} // hide small model\n\n\nfunction hide(smModel) {\n  smModel.innerHTML = '';\n  smModel.classList.remove('select', 'success', 'danger');\n  smModel.style.visibility = 'hidden';\n} // show select model\n\n\nfunction showSelectModel(x, y) {\n  smModel.innerHTML = '';\n  smModel.classList.add('select');\n  smModel.classList.remove('success', 'danger');\n  var choices = [];\n\n  for (var prop in currentLevel.hiddenC) {\n    var choice = document.createElement('h5');\n    choice.textContent = prop;\n    choices.push(choice);\n    smModel.append(choice);\n  }\n\n  smModel.style.visibility = 'visible';\n  smModel.style.left = x + 'px';\n  smModel.style.top = y + 'px';\n  return choices;\n} // show found or not\n\n\nfunction showTrueFalseModel(bool, x, y) {\n  smModel.innerHTML = '';\n  smModel.classList.remove('select');\n  var resp = document.createElement('h6');\n  var text;\n  var classe;\n\n  if (bool) {\n    text = 'true';\n    classe = 'success';\n  } else {\n    text = 'false';\n    classe = 'danger';\n  }\n\n  resp.textContent = text;\n  smModel.classList.add(classe);\n  smModel.append(resp);\n  smModel.style.visibility = 'visible';\n  smModel.style.left = x + 'px';\n  smModel.style.top = y + 'px';\n} // check if waldo\n\n\nfunction checkIfIsWaldo(resp, ID) {\n  var ids = currentLevel.hiddenC[resp].winIds;\n\n  if (ids.indexOf(ID) >= 0) {\n    return true;\n  }\n\n  return false;\n} // gameover\n\n\nfunction showGameOverModel() {\n  var modelContainer = document.querySelector('.modelContainer');\n  var model = modelContainer.querySelector('.model');\n  model.innerHTML = '';\n  var title = document.createElement('h2');\n  var para = document.createElement('p');\n  var btn = document.createElement('button');\n  title.innerHTML = 'Hero of hidden waldo!';\n  para.innerHTML = 'Congratulation You Won all levels';\n  btn.textContent = 'refresh';\n  model.append(title, para, btn);\n  modelContainer.classList.add('show');\n  btn.addEventListener('click', function () {\n    return window.location.reload();\n  });\n}\n\n//# sourceURL=webpack://where_is_waldo/./src/index.js?");
+
+/***/ }),
+
+/***/ "./src/utils/gameInfo.js":
+/*!*******************************!*\
+  !*** ./src/utils/gameInfo.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"gameInfo\": () => (/* binding */ gameInfo)\n/* harmony export */ });\nvar gameInfo = {\n  playerName: 'player',\n  score: 0,\n  level1: {\n    img: './img/level-1_500x500.jpg',\n    characters: [{\n      name: 'waldo',\n      image: './img/waldo.jpg',\n      found: false\n    }, {\n      name: 'oldaw',\n      image: './img/odlaw.jpg',\n      found: false\n    }, {\n      name: 'wizard',\n      image: './img/wizard.jpeg',\n      found: false\n    }]\n  },\n  level2: {\n    img: './img/level-2_500x500.jpg',\n    characters: [{\n      name: 'waldo',\n      image: './img/waldo.jpg',\n      found: false\n    }]\n  },\n  level3: {\n    img: './img/level-3_500x500.jpg',\n    characters: [{\n      name: 'waldo',\n      image: './img/waldo.jpg',\n      found: false\n    }, {\n      name: 'oldaw',\n      image: './img/odlaw.jpg',\n      found: false\n    }, {\n      name: 'wizard',\n      image: './img/wizard.jpeg',\n      found: false\n    }, {\n      name: 'winda',\n      image: './img/winda.jpeg',\n      found: false\n    }]\n  },\n  level4: {\n    img: './img/level-4_500x500.jpg',\n    characters: [{\n      name: 'waldo',\n      image: './img/waldo.jpg',\n      found: false\n    }, {\n      name: 'oldaw',\n      image: './img/odlaw.jpg',\n      found: false\n    }]\n  },\n  level5: {\n    img: './img/level-5_500x500.jpg',\n    characters: [{\n      name: 'waldo',\n      image: './img/waldo.jpg',\n      found: false\n    }, {\n      name: 'oldaw',\n      image: './img/odlaw.jpg',\n      found: false\n    }, {\n      name: 'wizard',\n      image: './img/wizard.jpeg',\n      found: false\n    }, {\n      name: 'winda',\n      image: './img/winda.jpeg',\n      found: false\n    }]\n  },\n  level6: {\n    img: './img/level-6_500x500.jpg',\n    characters: [{\n      name: 'waldo',\n      image: './img/waldo.jpg',\n      found: false\n    }]\n  }\n};\n\n//# sourceURL=webpack://where_is_waldo/./src/utils/gameInfo.js?");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
+/******/ 	
+/******/ })()
+;
